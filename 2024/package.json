@@ -1,0 +1,32 @@
+{
+  "scripts": {
+    "1": "bun solutions/01.ts",
+    "2": "bun solutions/02.ts",
+    "3": "bun solutions/03.ts",
+    "4": "bun solutions/04.ts",
+    "5": "bun solutions/05.ts",
+    "6": "bun solutions/06.ts",
+    "7": "bun solutions/07.ts",
+    "8": "bun solutions/08.ts",
+    "9": "bun solutions/09.ts",
+    "10": "bun solutions//10.ts",
+    "11": "bun solutions//11.ts",
+    "12": "bun solutions//12.ts",
+    "13": "bun solutions//13.ts",
+    "14": "bun solutions//14.ts",
+    "15": "bun solutions//15.ts",
+    "16": "bun solutions//16.ts",
+    "17": "bun solutions//17.ts",
+    "18": "bun solutions//18.ts",
+    "19": "bun solutions//19.ts",
+    "20": "bun solutions//20.ts",
+    "21": "bun solutions//21.ts",
+    "22": "bun solutions//22.ts",
+    "23": "bun solutions//23.ts",
+    "24": "bun solutions//24.ts",
+    "25": "bun solutions//25.ts"
+  },
+  "dependencies": {
+    "heap-js": "^2.5.0"
+  }
+}

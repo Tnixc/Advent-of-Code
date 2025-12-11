@@ -1,0 +1,57 @@
+# Default recipe - show available commands
+default:
+    @just --list
+
+# Compile a specific day (e.g., just build 1)
+build day:
+    @echo "Building day {{day}}..."
+    @mkdir -p target
+    cppo -I inputs -n solutions/{{day}}.ml > target/day{{day}}_gen.ml
+    cd target && ocamlopt -O3 -inline 100 -unbox-closures -o {{day}} day{{day}}_gen.ml
+    @rm target/day{{day}}_gen.ml
+
+# Run a specific day (e.g., just run 1)
+run day: (build day)
+    @echo "Running day {{day}}..."
+    @./target/{{day}}
+
+# Compile and run in one step (e.g., just solve 1)
+solve day: (run day)
+
+# Clean compiled files
+clean:
+    rm -rf target
+
+# Build all days (finds all *.ml files)
+build-all:
+    #!/usr/bin/env bash
+    mkdir -p target
+    for file in solutions/[0-9].ml solutions/[0-9][0-9].ml; do
+        if [ -f "$file" ]; then
+            day=$(basename "${file%.ml}")
+            echo "Building day $day..."
+            cppo -I inputs -n "$file" > "target/day${day}_gen.ml"
+            (cd target && ocamlopt -O3 -inline 100 -unbox-closures -o "$day" "day${day}_gen.ml") || exit 1
+            rm "target/day${day}_gen.ml"
+        fi
+    done
+
+# Build and run all days
+solve-all: (build-all)
+    #!/usr/bin/env bash
+    for exe in target/[0-9] target/[0-9][0-9]; do
+        if [ -f "$exe" ]; then
+            echo "Running $(basename "$exe")..."
+            ./"$exe"
+        fi
+    done
+
+# Run all days (assumes binaries are already built)
+run-all:
+    #!/usr/bin/env bash
+    for exe in target/[0-9] target/[0-9][0-9]; do
+        if [ -f "$exe" ]; then
+            echo "Running $(basename "$exe")..."
+            ./"$exe"
+        fi
+    done

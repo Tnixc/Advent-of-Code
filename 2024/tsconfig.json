@@ -1,0 +1,14 @@
+{
+  "compilerOptions": {
+    "module": "nodenext",
+    "moduleResolution": "nodenext",
+    "target": "esnext",
+    "lib": ["esnext", "dom"],
+    "noEmit": true,
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["inputs/*"],
+      "utils": ["utils.ts"]
+    }
+  }
+}

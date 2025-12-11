@@ -1,0 +1,8 @@
+inputs/
+target/
+.DS_Store
+inputs.ts
+inputs
+input
+node_modules
+
