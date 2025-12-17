@@ -7,13 +7,16 @@ build day:
     @echo "Building day {{day}}..."
     @mkdir -p target
     cppo -I inputs -n solutions/{{day}}.ml > target/day{{day}}_gen.ml
-    cd target && ocamlopt -O3 -inline 100 -unbox-closures -o {{day}} day{{day}}_gen.ml
+    cd target && ocamlopt -O3 -inline 100 -unbox-closures -o {{day}}.out day{{day}}_gen.ml
     @rm target/day{{day}}_gen.ml
 
 # Run a specific day (e.g., just run 1)
 run day: (build day)
     @echo "Running day {{day}}..."
-    @./target/{{day}}
+    @./target/{{day}}.out
+
+time day:
+    hyperfine ./target/{{day}}.out -N --warmup 1
 
 # Compile and run in one step (e.g., just solve 1)
 solve day: (run day)
@@ -31,7 +34,7 @@ build-all:
             day=$(basename "${file%.ml}")
             echo "Building day $day..."
             cppo -I inputs -n "$file" > "target/day${day}_gen.ml"
-            (cd target && ocamlopt -O3 -inline 100 -unbox-closures -o "$day" "day${day}_gen.ml") || exit 1
+            (cd target && ocamlopt -O3 -inline 100 -unbox-closures -o "$day" "day${day}_gen.ml" -o ${day}.out) || exit 1
             rm "target/day${day}_gen.ml"
         fi
     done
@@ -39,19 +42,37 @@ build-all:
 # Build and run all days
 solve-all: (build-all)
     #!/usr/bin/env bash
-    for exe in target/[0-9] target/[0-9][0-9]; do
+    for exe in target/[0-9].out target/[0-9][0-9].out; do
         if [ -f "$exe" ]; then
             echo "Running $(basename "$exe")..."
-            ./"$exe"
+            ./$exe
         fi
     done
 
 # Run all days (assumes binaries are already built)
 run-all:
     #!/usr/bin/env bash
-    for exe in target/[0-9] target/[0-9][0-9]; do
+    for exe in target/[0-9].out target/[0-9][0-9].out; do
         if [ -f "$exe" ]; then
             echo "Running $(basename "$exe")..."
-            ./"$exe"
+            ./$exe
         fi
     done
+
+time-all:
+    #!/usr/bin/env bash
+    for exe in target/[0-9].out target/[0-9][0-9].out; do
+        if [ -f "$exe" ]; then
+            hyperfine ./$exe -N --warmup 1
+        fi
+    done
+
+# Run hyperfine on all days sequentially in a single command
+time-all-a:
+    #!/usr/bin/env bash
+    cmd=$(find target -name '[0-9].out' -o -name '[0-9][0-9].out' | sort -V | sed 's/^/.\//g' | tr '\n' ' ' | sed 's/ / \&\& /g' | sed 's/ && $//')
+    if [ -n "$cmd" ]; then
+        hyperfine "sh -c '$cmd'" -N --warmup 1
+    else
+        echo "No executables found in target/"
+    fi
